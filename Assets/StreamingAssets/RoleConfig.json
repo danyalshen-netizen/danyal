@@ -1,0 +1,16 @@
+{
+  "roles": [
+    {
+      "roleId": 0,
+      "name": "默认角色",
+      "moveSpeed": 5.0,
+      "health": 100.0
+    },
+    {
+      "roleId": 1,
+      "name": "一号角色",
+      "moveSpeed": 4.5,
+      "health": 150
+    }
+  ]
+}

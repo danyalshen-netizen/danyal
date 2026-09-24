@@ -1,0 +1,78 @@
+﻿using UnityEngine;
+using QFramework;
+
+public class PlayerMoveController : MonoBehaviour, IController
+{
+    private CharacterController characterController;
+    private Transform cameraTransform;
+    private float verticalRotation;
+    private float moveSpeed;
+    private IGamePauseSystem pauseSystem;
+    private IUnRegister moveSpeedSubscription;
+    [SerializeField] private float mouseSensitivity = 2f;
+
+    public IArchitecture GetArchitecture() => GoldMineArchitecture.Interface;
+
+	void Awake()
+    {
+        characterController = GetComponent<CharacterController>();
+        pauseSystem = this.GetSystem<IGamePauseSystem>();
+
+        var roleContext = GetComponent<RoleContext>();
+        if (roleContext != null && roleContext.FirstViewCinema != null)
+        {
+            cameraTransform = roleContext.FirstViewCinema.transform;
+        }
+
+        if (roleContext != null
+            && this.GetModel<IRoleRuntimeModel>().TryGetRoleRuntime(roleContext.RoleRuntimeIndex, out var info))
+        {
+            // Register 不会立刻回调一次，当前值要自己读。
+            moveSpeed = info.MoveSpeed.Value;
+            moveSpeedSubscription = info.MoveSpeed.Register(speed => moveSpeed = speed);
+        }
+
+        CursorUtility.Lock();
+    }
+
+    void OnDestroy()
+    {
+        moveSpeedSubscription?.UnRegister();
+        moveSpeedSubscription = null;
+        CursorUtility.ShowAndUnlock();
+    }
+
+    void Update()
+    {
+        // 游戏暂停（打开背包/仓库等界面）时屏蔽第一人称视角旋转与移动输入，
+        // 避免鼠标移到 UI 外时带动镜头转动
+        if (pauseSystem != null && pauseSystem.IsPaused)
+        {
+            return;
+        }
+
+        // 第一人称视角控制
+        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
+        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
+
+        transform.Rotate(0, mouseX, 0);
+        verticalRotation -= mouseY;
+        verticalRotation = Mathf.Clamp(verticalRotation, -90f, 90f);
+        cameraTransform.localRotation = Quaternion.Euler(verticalRotation, 0, 0);
+
+        // 水平移动（A/D，沿用轴输入）
+        float h = Input.GetAxis("Horizontal");
+        // 前后移动（W/S，按键由全局快捷键配置提供）
+        float v = 0f;
+        if (Input.GetKey(HotKeyUtility.Forward))
+        {
+            v += 1f;
+        }
+        if (Input.GetKey(HotKeyUtility.Backward))
+        {
+            v -= 1f;
+        }
+        Vector3 horizontalMove = (transform.right * h + transform.forward * v) * moveSpeed;
+        characterController.Move(horizontalMove * Time.deltaTime);
+    }
+}

@@ -1,0 +1,10 @@
+{
+  "monsters": [
+    {
+      "monsterId": 0,
+      "name": "默认怪物",
+      "moveSpeed": 2.0,
+      "health": 100.0
+    }
+  ]
+}
