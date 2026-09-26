@@ -7,12 +7,6 @@ using UnityEngine;
 /// </summary>
 public static class HotKeyUtility
 {
-    /// <summary>前进</summary>
-    public static readonly KeyCode Forward = KeyCode.W;
-
-    /// <summary>后退</summary>
-    public static readonly KeyCode Backward = KeyCode.S;
-
     /// <summary>交互A</summary>
     public static readonly KeyCode InteractA = KeyCode.E;
 
