@@ -56,14 +56,14 @@ public class MineCaveState : GameProcedureStateBase
             roleIds[0], context.bornPoint.position, context.bornPoint.rotation);
         if (player == null) return;
 
-        // 先接管角色，再切换到其第一人称视角。
+        // 先接管角色，再切换到其第三人称视角。
         roleSystem.AddPlayerMoveController(player);
-        if (player.FirstViewCinema == null)
+        if (player.ThirdViewCinema == null)
         {
-            Debug.LogError("[MineCaveState] 默认角色未配置 FirstViewCinema。");
+            Debug.LogError("[MineCaveState] 默认角色未配置 ThirdViewCinema。");
             return;
         }
 
-        this.GetSystem<ICinemaChineCameraSystem>().SetCinemaChineCamera(player.FirstViewCinema);
+        this.GetSystem<ICinemaChineCameraSystem>().SetCinemaChineCamera(player.ThirdViewCinema);
     }
 }
