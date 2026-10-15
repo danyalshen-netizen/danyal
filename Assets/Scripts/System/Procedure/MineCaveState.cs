@@ -30,6 +30,13 @@ public class MineCaveState : GameProcedureStateBase
             if (context == null) continue;
 
             CreatePlayer(context);
+
+            var monster = this.GetSystem<IMonsterRuntimeSystem>().CreateMonster(
+            0, context.monsterBornPoint.position, context.monsterBornPoint.rotation);
+            if (monster != null && monster.GetComponent<MonsterNormalDamageReceiver>() == null)
+            {
+                monster.gameObject.AddComponent<MonsterNormalDamageReceiver>();
+            }
             return;
         }
 
@@ -63,6 +70,8 @@ public class MineCaveState : GameProcedureStateBase
             Debug.LogError("[MineCaveState] 默认角色未配置 ThirdViewCinema。");
             return;
         }
+
+        roleSystem.AddAttackController(player); // 添加攻击组件
 
         this.GetSystem<ICinemaChineCameraSystem>().SetCinemaChineCamera(player.ThirdViewCinema);
     }

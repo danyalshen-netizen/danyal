@@ -5,4 +5,5 @@ using UnityEngine;
 public class MineCaveSceneContext : MonoBehaviour
 {
     public Transform bornPoint;
+	public Transform monsterBornPoint;
 }
