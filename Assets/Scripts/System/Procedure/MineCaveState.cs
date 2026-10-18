@@ -7,14 +7,20 @@ public class MineCaveState : GameProcedureStateBase
     public override void OnEnter()
     {
         Debug.Log("[GameProcedure] 进入 MineCaveState");
+        UIKit.OpenPanel<LoadingPanel>(UILevel.PopUI, prefabName: "resources://UI/Panel/loadingpanel");
+        UIKit.OpenPanel<PackagePanel>(prefabName: "resources://UI/Panel/packagepanel");
+        UIKit.HidePanel<PackagePanel>();
         SceneManager.sceneLoaded += OnMineCaveLoaded;
-        SceneManager.LoadScene("MineCave");
+        SceneManager.LoadSceneAsync("MineCave");
     }
 
     public override void OnExit()
     {
         SceneManager.sceneLoaded -= OnMineCaveLoaded;
         Debug.Log("[GameProcedure] 退出 MineCaveState");
+        this.GetSystem<IPackageSystem>().RemovePackageListener();
+        UIKit.ClosePanel<PackagePanel>();
+        UIKit.HidePanel<LoadingPanel>();
     }
 
     private void OnMineCaveLoaded(Scene scene, LoadSceneMode mode)
@@ -22,6 +28,8 @@ public class MineCaveState : GameProcedureStateBase
         if (scene.name != "MineCave") return;
 
         SceneManager.sceneLoaded -= OnMineCaveLoaded;
+        this.GetSystem<IPackageSystem>().AddPackageListener();
+        UIKit.HidePanel<LoadingPanel>();
         Debug.Log("[GameProcedure] MineCave场景加载完成");
 
         foreach (var root in scene.GetRootGameObjects())

@@ -17,12 +17,17 @@ public class PackageListener : MonoBehaviour, IController
         TogglePackage();
     }
 
-    /// <summary>背包面板已打开则关闭，否则通过 UIKit 加载并打开。</summary>
+    /// <summary>切换背包面板显隐，保留预加载的面板实例。</summary>
     private void TogglePackage()
     {
-        if (UIKit.GetPanel<PackagePanel>() != null)
+        var panel = UIKit.GetPanel<PackagePanel>();
+        if (panel != null && panel.gameObject.activeSelf)
         {
-            UIKit.ClosePanel<PackagePanel>();
+            UIKit.HidePanel<PackagePanel>();
+        }
+        else if (panel != null)
+        {
+            UIKit.ShowPanel<PackagePanel>();
         }
         else
         {
